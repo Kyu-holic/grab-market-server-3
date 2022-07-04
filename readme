@@ -1,0 +1,176 @@
+1. npm init 으로 시작
+
+2. npm install express
+
+3. npm install cors
+
+4. server.js 생성하여 express 구문 작성
+
+5. 브라우저의 주소창에서는 보통 get 만 받아올 수 있기 때문에 post를 하고싶으면
+    포스트맨에서 하면 됨. request 새로 생성하여 post값 요청
+
+6. get요청의 /products에 아래 값을 넣어준다.
+
+ products: [
+      {
+        id: 1,
+        name: "농구공",
+        price: 10000,
+        seller: "Jordan",
+        imageUrl: "images/products/basketball1.jpeg",
+      },
+      {
+        id: 2,
+        name: "축구공",
+        price: 50000,
+        seller: "Jordan",
+        imageUrl: "images/products/soccerball1.jpg",
+      },
+      {
+        id: 3,
+        name: "키보드",
+        price: 15000,
+        seller: "Grab",
+        imageUrl: "images/products/keyboard1.jpg",
+      },
+    ]
+
+7. web에서 main.js의 axios 주소를 http://localhost:8080/products로 변경하여 web과 server 연결하기.
+
+8. app.get 에서 query를 뽑아낸 뒤 console.log로 query값을 찍어주고
+        웹에서 http://localhost:8080/products?id=1000 하면 1000이란 값이 query로 찍힘
+
+9. app.post 에서 req.body 값을 body 변수에 넣은 후 body값을 send로 보내면
+    포스트맨에서 post값으로 넣은 값이 body에 담긴다.
+    post method로 body에
+    {
+      "name": "키보드",
+      "price": 50000
+    }
+    을 넣기.
+
+10. app.get("/products/:id") 를 하나 더 만들어서 id 값에 어떤 숫자를 넣든
+    동적으로 경로를 관리할 수 있게 파라미터 사용하기. req.params
+
+    46. squlite, sequelize 설치하기
+    npm install sequelize sqlite3
+
+11. 터미널 환경에서 sequelize 관련된 파일을 만들 때 손쉽게 만들 수 있게 도와줌
+    npm install -g sequelize-cli
+
+12. sequelize init으로 실행
+
+13. sequelize는 mysql이 아닌 sqlite를 사용하기 때문에 config 들어가서 다 지우고 아래 내용 붙여넣기
+{
+  "development": {
+    "dialect": "sqlite",
+    "storage": "./database.sqlite3"
+  },
+  "test": {
+    "dialect": "sqlite",
+    "storage": ":memory"
+  },
+  "production": {
+    "dialect": "sqlite",
+    "storage": "./database.sqlite3"
+  }
+}
+
+14. server.js에서 models 불러와서 models에 저장
+
+15. app.listen에 models.sequelize.sync()로 접근
+    models에 테이블 관련된 모델링에 필요한 정보를 넣을 것인데, 그 때 sync를 시키겠다라는 뜻
+    models에 입력한 정보를 database와 동기화시킨 다는 뜻.
+
+16. then, actch를 해주고 catch에는 process.exit()을 써서 에러가 나면 프로세스를   
+    종료시키게 한다.
+
+17. node로 server.js를 실행시키면 dtabase.sqlite3 파일 생성
+
+18. models에 product.js를 실행시켜서 module을 export해주는데
+    sequelize와 DataTypes를 인자로 가진 함수를 만든다. 
+
+19. 그 함수 안에 테이블을 만들어주는데 sequelize.define으로 하며 테이블 이름은 Product
+    그리고 그 안에는 name, price, seller, desciprtion, imageUrl 정보가 들어감.
+    type에는 DataType이 무엇인지 (String or INTEGER 등등) 그리고 괄호 안에는 몇글자일지
+    allowNull은 false로 하면 필수, true하면 필수가 아니게 된다.
+
+20. 여기서 databa.sqlite3 파일을 보면 데이터가 깨져서 보이기 때문에
+    DB Browser sqlite3를 사용하여 데이터를 본다.
+
+21. server.js의 app.post("/products")에서 body의 값 name, description, price, seller를 destrucring 하고 models.Product.create를 통해   테이블 안에 들어가는 객체를 생성한다.name 등등
+
+22. then과 catch 작성
+
+23. postman으로 가서 post로 description과 seller를 넣고 send를 하면 값을 받는다.
+
+23. if문을 사용하여 name, description, seller, price 중 하나라도 없으면 나오는 
+    방어코드를 짠다.
+
+24. app.get reqeust에다가 models.Product.findall()을 통해 안에 있는 모든 데이터를 조회
+    기존에 직접 데이터를 넣었던 products 정보는 삭제
+
+25. postman에서 get요청을 하면 sequelize에 넣었던 데이터가 모두 조회되는 것을 알 수 있다.
+
+26. 상품상세 정보를 불러오기 app.get("/products/:id")에서
+    models.Product.findOne을 사용하여 하나의 데이터만 조회 
+    그 안에는 조건문을 넣을 수 있는데 where를 사용
+
+27. then과 catch를 작성해주고 findOne에선 id값으로 조회를 해준다.
+
+28. app.get("/products")에서 findAll을 생성순서의 내림차순으로 정렬해준다.
+  createdAt을 기준으로 내림차순(DESC), 오름차순은(ASC)
+
+29. attributes를 이용하여 필요한 데이터만 불러올 수 있게 한다.
+    웹 화면에서 보일 때 필요한 정보만 불러오게 하기 위한 것. 
+    id, name, price, createdAt, seller, imageUrl만 불러오기
+
+30. postman에서 조회해보면 attributes로 설정한 것만 불러오게 된다.
+
+31. DBbrowser에서 imageUrl에 경로를 넣어준다.
+
+32. 리액트로 돌아가기 
+
+33. npm install multer를 통하여 multer 설치
+    nodejs에서 파일처리를 할 때 많이 사용하는 라이브러리로 multer 사용
+    용량이 큰 이미지 비디오 같은 파일들을 다룰 때는 multipart/form-data를 사용한다.
+
+34. conster multer = require("multer")를 사용하여 불러오기
+
+35. upload할 파일의 경로를 정해주는데 cnost uplaod = multer({dest: 'uploads/'})
+    이런식으로 지정하면 uploads라는 파일이 생성되는 것을 확인할 수 있다.
+
+36. /image post 요청을 하나 더 만들어 준다. 이미지를 하나만 보낼 계획이므로
+    함수의 두번째(가운데, 미들웨어) 인자로 upload.single()을 해주는데 파일을 보낼 때는 항상 key가 있어야한다.
+    그 key를 여기서는 image로 설정. 그러면 postman에서 /image post 요청을 하나 더 생성 후 body로 가서 form-data의 key를 image로 설정 후 사진 전송하면
+    imageUrl을 찾을 수 있다.
+    이렇게 하면 uploads 파일에 이상한 이름의 사진이 저장되는 것을 확인 가능.
+
+37. 그런데 이렇게 하면 파일이 업로드 될 때 파일 이름이 이상하게 설정이 된다.
+    저장했을 때의 파일이름으로 업로드 해주기 위해 multer의 로직을 바꿔줘야한다.
+    const upload = multer({
+      storage: multer.diskStorage({
+        destination: function (req,file,cb){
+          cb(null, "uploads/")
+        },
+        filename: function (req,file,cb) {
+          cb(null, file.originalname)
+        }
+      })
+    }) 
+    이렇게 설정해 주기
+
+38. 리액트로 넘어가서 이미지를 업로드하는 로직 구현하기
+
+39. 리액트엑서 작성한 후 app.use("/uploads", express.static("uploads")); 
+    를 작성. => 이유는 아래
+
+    좋은 질문입니다!
+
+    express 서버에서 클라이언트에게 정적(static)인 데이터(이미지, 비디오 등)를 제공하기 위해서 필요한 코드입니다.
+
+    위 코드에서 app.use의 두번째 인자인 express.static('uploads') 는 express 프로젝트 내부에 있는 uploads 폴더의 파일들을 제공하겠다는 의미입니다.
+
+    첫번째 인자인 '/uploads'는 url뒤에 path를 붙여서 서버URL/uploads/파일명 이렇게 접근하도록 설정하는 구문입니다 :
+
+40. 

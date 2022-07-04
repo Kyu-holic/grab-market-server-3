@@ -2,13 +2,27 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const models = require("./models");
+const multer = require("multer");
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/");
+    },
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    },
+  }),
+});
 const port = 8080;
 
 app.use(express.json());
 app.use(cors());
 
 app.get("/products", (req, res) => {
-  models.Product.findAll()
+  models.Product.findAll({
+    order: [["createdAt", "DESC"]],
+    attributes: ["id", "name", "seller", "price", "createdAt", "imageUrl"],
+  })
     .then((result) => {
       console.log("PRODUCTS : ", result);
       res.send({
@@ -63,6 +77,13 @@ app.post("/products", (req, res) => {
       console.error(error);
       res.status(400).send("상품 업로드에 문제가 발생했습니다.");
     });
+});
+
+app.post("/image", upload.single("image"), (req, res) => {
+  const file = req.file;
+  res.send({
+    imageUrl: file.path,
+  });
 });
 
 app.listen(port, () => {
